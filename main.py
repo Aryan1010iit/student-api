@@ -1,10 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 
 app = FastAPI()
 
-# Enable CORS
+# CORS setup
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -13,16 +13,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load marks from CSV
+# Load CSV
 df = pd.read_csv("marks.csv")
 marks_dict = dict(zip(df["name"], df["marks"]))
+
+@app.get("/api")
+def get_marks(name: list[str] = Query([])):
+    result = [marks_dict.get(n, None) for n in name]
+    return {"marks": result}
 
 @app.get("/names")
 def get_names():
     return {"available_names": list(marks_dict.keys())}
-
-
-@app.get("/api")
-def get_marks(name: list[str] = []):
-    result = [marks_dict.get(n, None) for n in name]
-    return {"marks": result}
