@@ -4,10 +4,10 @@ import pandas as pd
 
 app = FastAPI()
 
-# CORS setup
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Allow all origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -19,7 +19,8 @@ marks_dict = dict(zip(df["name"], df["marks"]))
 
 @app.get("/api")
 def get_marks(name: list[str] = Query([])):
-    result = [marks_dict.get(n, None) for n in name]
+    # Important: do NOT default to any value if name not found
+    result = [marks_dict.get(n) for n in name]  # get() returns None (which maps to JSON null)
     return {"marks": result}
 
 @app.get("/names")
