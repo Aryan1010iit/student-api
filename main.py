@@ -17,6 +17,11 @@ app.add_middleware(
 df = pd.read_csv("marks.csv")
 marks_dict = dict(zip(df["name"], df["marks"]))
 
+@app.get("/names")
+def get_names():
+    return {"available_names": list(marks_dict.keys())}
+
+
 @app.get("/api")
 def get_marks(name: list[str] = []):
     result = [marks_dict.get(n, None) for n in name]
